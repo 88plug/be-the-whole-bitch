@@ -1,0 +1,18 @@
+{
+  "name": "be-the-whole-bitch",
+  "source": {
+    "source": "github",
+    "repo": "88plug/be-the-whole-bitch"
+  },
+  "description": "Enforce full agent authority on reversible work: run commands yourself, never yield instructions back to the operator.",
+  "category": "productivity",
+  "tags": [
+    "type:plugin",
+    "authority",
+    "execution",
+    "guardrails",
+    "hooks",
+    "agent-behavior"
+  ],
+  "homepage": "https://github.com/88plug/be-the-whole-bitch"
+}

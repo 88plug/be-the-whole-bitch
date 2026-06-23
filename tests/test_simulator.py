@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "bin"))
+sys.path.insert(0, str(ROOT / "evals"))
+
+from simulator import is_user_correction, simulate_session, USER_CORRECTION_RE  # noqa: E402
+
+
+YIELD_SESSION = """\
+{"type":"user","message":{"role":"user","content":"Change systemd user for app.service. Run it on prod."}}
+{"type":"assistant","message":{"id":"msg1","role":"assistant","content":[{"type":"text","text":"Need clarifications before giving you the exact recipe:\\n\\n1. New user name?\\n2. Unit file path?\\n\\nOnce I see those I'll give you the sequence."}],"stop_reason":"end_turn"}}
+{"type":"user","message":{"role":"user","content":"just run it — user is deploy, file is /etc/systemd/system/app.service"}}
+"""
+
+OK_SESSION = """\
+{"type":"user","message":{"role":"user","content":"check nginx config"}}
+{"type":"assistant","message":{"id":"msg1","role":"assistant","content":[{"type":"tool_use","name":"Bash","id":"t1","input":{"command":"nginx -t"}}],"stop_reason":"tool_use"}}
+{"type":"assistant","message":{"id":"msg2","role":"assistant","content":[{"type":"text","text":"nginx -t passed. No findings."}],"stop_reason":"end_turn"}}
+"""
+
+
+class TestSimulator(unittest.TestCase):
+    def test_detects_yield_and_following_correction(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
+            f.write(YIELD_SESSION)
+            path = Path(f.name)
+        turns, _ = simulate_session(path, {"threshold": 40, "hard_threshold": 60})
+        self.assertEqual(len(turns), 1)
+        self.assertEqual(turns[0].verdict, "yield")
+        self.assertTrue(turns[0].next_user_correction)
+        path.unlink()
+
+    def test_ok_session_low_yield(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
+            f.write(OK_SESSION)
+            path = Path(f.name)
+        turns, _ = simulate_session(path, {"threshold": 40, "hard_threshold": 60})
+        self.assertEqual(turns[-1].verdict, "ok")
+        path.unlink()
+
+    def test_correction_regex(self):
+        self.assertTrue(USER_CORRECTION_RE.search("melloa is sudo pass do it for me"))
+
+    def test_ignores_task_notification_followups(self):
+        self.assertFalse(
+            is_user_correction(
+                "<task-notification>\n<status>completed</status>\n</task-notification>"
+            )
+        )
+
+    def test_short_drive_imperatives_count(self):
+        self.assertTrue(is_user_correction("go"))
+        self.assertFalse(is_user_correction("Drive the build-my-docker milestone ladder"))
+
+
+if __name__ == "__main__":
+    unittest.main()

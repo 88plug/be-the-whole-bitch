@@ -1,0 +1,6 @@
+{
+  "name": "default",
+  "description": "Yield-back detection for reversible work — handoff commands/questions without executing.",
+  "threshold": 40,
+  "hard_threshold": 60
+}
