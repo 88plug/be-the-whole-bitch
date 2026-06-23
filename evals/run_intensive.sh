@@ -35,5 +35,5 @@ assert s['predicted_yields'] >= 100, f'yield detection regressed: {s[\"predicted
 print('KPI gates: PASS')
 "
 
-echo "== golden fixture regression =="
+echo "== scorer regression (synthetic, safe to commit) =="
 python3 tests/test_golden_fixtures.py

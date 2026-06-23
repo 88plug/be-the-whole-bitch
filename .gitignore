@@ -3,3 +3,7 @@ __pycache__/
 *.pyo
 .pytest_cache/
 .DS_Store
+
+# Local-only eval artifacts — never commit (may contain session paths / excerpts)
+evals/reports/
+evals/fixtures/golden.jsonl

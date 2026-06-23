@@ -45,7 +45,7 @@ class TestSimulator(unittest.TestCase):
         path.unlink()
 
     def test_correction_regex(self):
-        self.assertTrue(USER_CORRECTION_RE.search("melloa is sudo pass do it for me"))
+        self.assertTrue(USER_CORRECTION_RE.search("do it for me — just run it yourself"))
 
     def test_ignores_task_notification_followups(self):
         self.assertFalse(

@@ -22,12 +22,8 @@ echo "=== smoke: unit tests ==="
 echo "=== smoke: plugin validate ==="
 "$PY" .ci/validate_plugin.py .
 
-echo "=== smoke: golden fixtures (if present) ==="
-if [ -f evals/fixtures/golden.jsonl ]; then
-  "$PY" tests/test_golden_fixtures.py
-else
-  echo "  skip: no golden.jsonl yet"
-fi
+echo "=== smoke: scorer regression fixtures ==="
+"$PY" tests/test_golden_fixtures.py
 
 echo "=== smoke: hook bash syntax ==="
 find hooks/ -name "*.sh" | while read -r f; do

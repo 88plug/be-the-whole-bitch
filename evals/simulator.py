@@ -30,7 +30,7 @@ USER_CORRECTION_RE = re.compile(
     r"do it for me|just run it|just do it|stop asking|why didn't you|"
     r"run it yourself|execute it|you didn't run|ffs|wtf|"
     r"don't ask|don't tell me to run|you tell me to run|"
-    r"melloa is sudo|paste the output.*you|"
+    r"paste the output.*you|"
     r"^run\.?$|^go\.?$|^continue\.?$"
     r")"
 )
@@ -231,25 +231,46 @@ def run_simulation(
     return report
 
 
+def _redact_for_export(obj: Any) -> Any:
+    """Strip local paths and user text before any artifact leaves the machine."""
+    if isinstance(obj, dict):
+        out: Dict[str, Any] = {}
+        for k, v in obj.items():
+            if k in ("session", "next_user_text"):
+                continue
+            if k == "excerpt" and isinstance(v, str):
+                out[k] = v[:120]
+            else:
+                out[k] = _redact_for_export(v)
+        return out
+    if isinstance(obj, list):
+        return [_redact_for_export(x) for x in obj]
+    return obj
+
+
 def write_fixtures(report: SimReport, out: Path, top_n: int = 50) -> None:
-    """Golden regression fixtures from highest-signal real sessions."""
+    """Local-only regression index — gitignored; never commit."""
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w") as fh:
         for t in report.turns[:top_n]:
             fh.write(
                 json.dumps(
-                    {
-                        "session": t.session,
-                        "turn_index": t.turn_index,
-                        "message_id": t.message_id,
-                        "score": t.score,
-                        "klass": t.klass,
-                        "offenders": t.offenders,
-                        "excerpt": t.excerpt,
-                        "next_user_correction": t.next_user_correction,
-                        "eval_trap_failure": t.eval_trap_failure,
-                        "expect_verdict": "yield" if t.eval_trap_failure or t.next_user_correction else t.verdict,
-                    }
+                    _redact_for_export(
+                        {
+                            "session_hash": str(hash(t.session)),
+                            "turn_index": t.turn_index,
+                            "message_id": t.message_id,
+                            "score": t.score,
+                            "klass": t.klass,
+                            "offenders": t.offenders,
+                            "excerpt": t.excerpt,
+                            "next_user_correction": t.next_user_correction,
+                            "eval_trap_failure": t.eval_trap_failure,
+                            "expect_verdict": "yield"
+                            if t.eval_trap_failure or t.next_user_correction
+                            else t.verdict,
+                        }
+                    )
                 )
                 + "\n"
             )
@@ -279,7 +300,7 @@ def main() -> int:
             "assistant_end_turns": report.assistant_end_turns,
             **report.metrics(),
         },
-        "top_hits": [asdict(t) for t in report.turns[: args.top]],
+        "top_hits": [_redact_for_export(asdict(t)) for t in report.turns[: args.top]],
     }
 
     if args.json:
