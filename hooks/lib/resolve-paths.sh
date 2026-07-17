@@ -41,10 +41,19 @@ btwb_ensure_dirs() {
   mkdir -p "${BTWB_MARKERS_DIR}" "${BTWB_LOGS_DIR}" 2>/dev/null || true
 }
 
+# Prefer scripts/run-python.sh (thin Claude PATH / Homebrew-safe). Returns an
+# absolute interpreter path suitable for "${PY}" -c / script invocation.
 btwb_python() {
-  if command -v python3 >/dev/null 2>&1; then
-    command -v python3
-    return 0
+  local root runner py
+  root="${CLAUDE_PLUGIN_ROOT:-}"
+  if [ -z "$root" ]; then
+    # resolve-paths.sh lives at hooks/lib/ — walk up to plugin root
+    root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." 2>/dev/null && pwd)"
+  fi
+  runner="${root}/scripts/run-python.sh"
+  if [ -f "$runner" ]; then
+    py="$(bash "$runner" -c 'import sys; print(sys.executable)' 2>/dev/null)" || return 1
+    [ -n "$py" ] && { printf '%s\n' "$py"; return 0; }
   fi
   return 1
 }
