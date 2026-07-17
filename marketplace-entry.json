@@ -1,10 +1,10 @@
 {
   "name": "be-the-whole-bitch",
   "source": {
-    "source": "github",
-    "repo": "88plug/be-the-whole-bitch"
+    "source": "url",
+    "url": "https://github.com/88plug/be-the-whole-bitch.git"
   },
-  "description": "Enforce full agent authority on reversible work: run commands yourself, never yield instructions back to the operator.",
+  "description": "Enforce full agent authority on reversible work: run commands yourself, never yield instructions back to the operator. Stop hook scores yield-back turns; next prompt gets a one-shot drive correction.",
   "category": "productivity",
   "tags": [
     "type:plugin",

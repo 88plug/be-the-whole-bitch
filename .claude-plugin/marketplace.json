@@ -1,0 +1,32 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "be-the-whole-bitch",
+  "description": "Enforce full agent authority on reversible work: run commands yourself, never yield instructions back to the operator. Stop hook scores yield-back turns; next prompt gets a one-shot drive correction.",
+  "owner": {
+    "name": "88plug",
+    "email": "andrew@88plug.com"
+  },
+  "plugins": [
+    {
+      "name": "be-the-whole-bitch",
+      "source": ".",
+      "displayName": "Be The Whole Bitch",
+      "description": "Enforce full agent authority on reversible work: run commands yourself, never yield instructions back to the operator. Stop hook scores yield-back turns; next prompt gets a one-shot drive correction.",
+      "author": {
+        "name": "88plug",
+        "email": "andrew@88plug.com"
+      },
+      "homepage": "https://github.com/88plug/be-the-whole-bitch",
+      "license": "FSL-1.1-ALv2",
+      "category": "productivity",
+      "tags": [
+        "type:plugin",
+        "authority",
+        "execution",
+        "guardrails",
+        "hooks",
+        "agent-behavior"
+      ]
+    }
+  ]
+}
