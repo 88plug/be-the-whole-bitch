@@ -18,6 +18,7 @@ class AssistantTurn:
     has_text: bool
     stop_reason: Optional[str]
     line_count: int
+    tool_names: List[str]
 
     @property
     def text(self) -> str:
@@ -60,6 +61,7 @@ def parse_assistant_turns(path: Path) -> List[AssistantTurn]:
             "has_text": False,
             "stop_reason": None,
             "line_count": 0,
+            "tool_names": [],
             "order": 0,
         }
     )
@@ -89,6 +91,9 @@ def parse_assistant_turns(path: Path) -> List[AssistantTurn]:
                 btype = block.get("type")
                 if btype == "tool_use":
                     g["has_tool_use"] = True
+                    name = block.get("name")
+                    if isinstance(name, str) and name:
+                        g["tool_names"].append(name)
                 elif btype == "text":
                     text = block.get("text") or ""
                     if text.strip():
@@ -108,6 +113,7 @@ def parse_assistant_turns(path: Path) -> List[AssistantTurn]:
                 has_text=g["has_text"],
                 stop_reason=g["stop_reason"],
                 line_count=g["line_count"],
+                tool_names=g["tool_names"],
             )
         )
     return turns

@@ -92,6 +92,7 @@ def parse_timeline(path: Path) -> List[TimelineEvent]:
                     "has_text": False,
                     "stop_reason": None,
                     "line_count": 0,
+                    "tool_names": [],
                     "line_no": line_no,
                     "finalized": False,
                 }
@@ -103,6 +104,9 @@ def parse_timeline(path: Path) -> List[TimelineEvent]:
                 btype = block.get("type")
                 if btype == "tool_use":
                     g["has_tool_use"] = True
+                    name = block.get("name")
+                    if isinstance(name, str) and name:
+                        g["tool_names"].append(name)
                 elif btype == "text":
                     t = block.get("text") or ""
                     if t.strip():
@@ -125,6 +129,7 @@ def parse_timeline(path: Path) -> List[TimelineEvent]:
                                 has_text=g["has_text"],
                                 stop_reason=g["stop_reason"],
                                 line_count=g["line_count"],
+                                tool_names=g["tool_names"][:],
                             ),
                         )
                     )
