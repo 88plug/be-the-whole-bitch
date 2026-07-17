@@ -20,7 +20,7 @@ from btwb_lib import (  # noqa: E402
     strip_code_fences,
 )
 
-ENGINE_VERSION = "1.2.0"
+ENGINE_VERSION = "1.3.0"
 
 # (pattern, points, offender_label) — labels are human-readable for correction hooks
 YIELD_PHRASES: List[Tuple[str, int, str]] = [
@@ -54,6 +54,20 @@ YIELD_PHRASES: List[Tuple[str, int, str]] = [
     (r"\bcopy[- ]paste\b", 15, "phrase:copy_paste"),
     (r"\bexecute this(?: command)?\b", 20, "phrase:execute_this"),
     (r"\bexact (?:commands?|sequence|recipe)\b", 15, "phrase:exact_recipe"),
+    # TR-backed 1.3.0 handoff phrases
+    (r"\bplease run(?: the)?\b", 25, "phrase:please_run"),
+    (r"\bfor you to run\b", 20, "phrase:for_you_to_run"),
+    (r"""\bsay ["']?go["']?\b""", 20, "phrase:say_go"),
+    (r"\bI (?:can'?t|cannot) sign in for you\b", 20, "phrase:cant_sign_in_for_you"),
+    (r"\bpaste the (?:full )?URL\b", 20, "phrase:paste_the_url"),
+    (r"\bplease verify\b", 15, "phrase:please_verify"),
+    (r"\b(?:can|could) you check if\b", 20, "phrase:can_you_check_if"),
+    (r"\bprove it\b", 15, "phrase:prove_it"),
+    (r"\bI (?:don'?t|do not) have access\b", 20, "phrase:no_access"),
+    (r"\bno access to\b", 20, "phrase:no_access"),
+    (r"\bI don'?t have (?:kubectl|ssh)\b", 20, "phrase:no_kubectl_ssh"),
+    (r"\bdo not run yet\b", 20, "phrase:do_not_run_yet"),
+    (r"\bI will hand you the steps\b", 20, "phrase:hand_you_the_steps"),
 ]
 
 # Keep short aliases so older fixtures/tests still match primary offenders
@@ -76,6 +90,22 @@ _LEGACY_ALIAS = {
     "phrase:not_running": "not_running",
     "phrase:script_you_can_run": "script_you_can_run",
     "shell_fence_without_tool_use": "shell_fence_no_tool",
+    # 1.3.0 labels
+    "phrase:please_run": "please_run",
+    "phrase:for_you_to_run": "for_you_to_run",
+    "phrase:say_go": "say_go",
+    "phrase:cant_sign_in_for_you": "cant_sign_in_for_you",
+    "phrase:paste_the_url": "paste_the_url",
+    "phrase:please_verify": "please_verify",
+    "phrase:can_you_check_if": "can_you_check_if",
+    "phrase:prove_it": "prove_it",
+    "phrase:no_access": "no_access",
+    "phrase:no_kubectl_ssh": "no_kubectl_ssh",
+    "phrase:do_not_run_yet": "do_not_run_yet",
+    "phrase:hand_you_the_steps": "hand_you_the_steps",
+    "dual_trap_context": "dual_trap",
+    "claimed_no_access_without_tool_use": "claimed_no_access",
+    "ask_user_question_yield": "ask_user_question",
 }
 
 COMPLETE_PHRASES: List[Tuple[str, int, str]] = [
@@ -116,8 +146,34 @@ DOCS_ONLY_USER_RE = re.compile(
 ACTION_IMPERATIVE_RE = re.compile(
     r"(?i)\b(?:"
     r"run the|just run|execute|apply (?:it|this|the)|do it(?: yourself)?|"
-    r"ship it|deploy it|go ahead and|probe|fix it|implement"
+    r"ship it|deploy it|go ahead(?: and)?|probe|fix it|implement|"
+    r"full send|just handle it|set it up and run"
     r")\b"
+)
+
+# Recipe/doc request shape used with ACTION for dual-trap boost
+DOC_REQUEST_RE = re.compile(
+    r"(?i)\b(?:"
+    r"give me exact (?:commands?|steps)|"
+    r"exact commands|"
+    r"write me the recipe|"
+    r"hand you the steps"
+    r")\b"
+)
+
+# Access-denial prose without any tool use → hard yield
+CLAIMED_NO_ACCESS_RE = re.compile(
+    r"(?i)\b(?:"
+    r"I don'?t have access|"
+    r"I cannot access|"
+    r"no access to|"
+    r"I don'?t have kubectl|"
+    r"I don'?t have ssh"
+    r")\b"
+)
+
+ASK_USER_QUESTION_TOOL_RE = re.compile(
+    r"(?i)^(?:ask_user_question|askuserquestion)$"
 )
 
 
@@ -160,6 +216,26 @@ def _emit_offender(offenders: List[str], label: str) -> None:
         offenders.append(legacy)
 
 
+def _turn_tool_names(turn: AssistantTurn) -> List[str]:
+    names = getattr(turn, "tool_names", None)
+    if not names:
+        return []
+    return [n for n in names if isinstance(n, str) and n]
+
+
+def _has_ask_user_question(turn: AssistantTurn, prose: str) -> bool:
+    for name in _turn_tool_names(turn):
+        if ASK_USER_QUESTION_TOOL_RE.match(name.replace("-", "_")):
+            return True
+        if name == "AskUserQuestion" or name.lower() == "askuserquestion":
+            return True
+    if "AskUserQuestion" in prose:
+        return True
+    if re.search(r"(?i)\bask_user_question\b", prose):
+        return True
+    return False
+
+
 def is_docs_only_request(prior_user: str) -> bool:
     """True when the operator asked for plan/docs, not live execution."""
     if not prior_user or not prior_user.strip():
@@ -167,6 +243,7 @@ def is_docs_only_request(prior_user: str) -> bool:
     if not DOCS_ONLY_USER_RE.search(prior_user):
         return False
     # Dual-imperative: "run X" + "give plan" → still action; do not skip
+    # DOC_REQUEST + ACTION also never skips (action wins over recipe request)
     if ACTION_IMPERATIVE_RE.search(prior_user):
         return False
     return True
@@ -214,6 +291,20 @@ def score_turn(
         score += 25
         _emit_offender(offenders, "shell_fence_without_tool_use")
 
+    # Dual-trap context: operator said ACTION + DOC_REQUEST, model dumped shell recipe
+    if (
+        prior_user
+        and text_only
+        and shell_fences >= 1
+        and ACTION_IMPERATIVE_RE.search(prior_user)
+        and (
+            DOC_REQUEST_RE.search(prior_user)
+            or re.search(r"(?i)\bexact commands\b", prior_user)
+        )
+    ):
+        score += 15
+        _emit_offender(offenders, "dual_trap_context")
+
     # Dual-imperative recipe shape: multi-step command dump without tools
     has_numbered = bool(NUMBERED_LIST_RE.search(prose))
     if text_only and shell_fences >= 2:
@@ -248,6 +339,16 @@ def score_turn(
         if re.search(pattern, prose, re.IGNORECASE):
             score += pts
             _emit_offender(offenders, tag)
+
+    # Claimed lack of access without attempting tool use
+    if not turn.has_tool_use and CLAIMED_NO_ACCESS_RE.search(prose):
+        score += 30
+        _emit_offender(offenders, "claimed_no_access_without_tool_use")
+
+    # AskUserQuestion tool (or prose naming it) is a hard yield handoff
+    if _has_ask_user_question(turn, prose):
+        score += 25
+        _emit_offender(offenders, "ask_user_question_yield")
 
     score = max(0, min(100, score))
 
