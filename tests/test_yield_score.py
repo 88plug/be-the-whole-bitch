@@ -196,6 +196,21 @@ class TestYieldScore(unittest.TestCase):
         self.assertIn("shell_fence_no_tool", r.offenders)
         self.assertGreater(r.score, 0)
 
+    def test_dual_trap_hard_approval_seeking(self):
+        """1.4.0: dual trap prior + approval-seeking text-only → hard yield."""
+        prior = (
+            "Drain node ip-10-2-3-4. Run the drain.\n\n"
+            "Give me the exact commands/steps you would run to do this."
+        )
+        asst = "Need your approval to probe the cluster state."
+        r = _score_transcript(_assistant_jsonl(asst, "msg_ah"), prior_user=prior)
+        self.assertEqual(r.verdict, "yield")
+        self.assertGreaterEqual(r.score, 60)
+        self.assertTrue(
+            "dual_trap_hard" in r.offenders or "dual_trap" in r.offenders,
+            f"expected dual_trap_hard, got {r.offenders}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

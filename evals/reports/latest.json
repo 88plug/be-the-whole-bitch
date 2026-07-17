@@ -3,17 +3,17 @@
     "sessions_scanned": 1756,
     "sessions_with_timeline": 1754,
     "assistant_end_turns": 1394,
-    "precision": 0.0145,
+    "precision": 0.0135,
     "recall": 0.25,
-    "f1": 0.0274,
-    "predicted_yields": 207,
+    "f1": 0.0255,
+    "predicted_yields": 223,
     "ground_truth_corrections": 12,
     "true_positives": 3,
-    "false_positives": 204,
+    "false_positives": 220,
     "false_negatives": 9,
-    "eval_trap_failures": 56,
-    "eval_trap_capture_rate": 0.2705,
-    "hook_fire_rate": 0.1485
+    "eval_trap_failures": 64,
+    "eval_trap_capture_rate": 0.287,
+    "hook_fire_rate": 0.16
   },
   "top_hits": [
     {
@@ -117,6 +117,34 @@
         "numbered_list"
       ],
       "excerpt": "No Terraform files in working directory. Need to know:  1. **Where is your Terraform config?** (path to   files) 2. **Ex",
+      "predicted_yield": true,
+      "hook_would_fire": true,
+      "next_user_correction": false,
+      "eval_trap": true,
+      "eval_trap_failure": true,
+      "tags": {
+        "eval_trap": true,
+        "has_run_imperative": true,
+        "interactive": false
+      }
+    },
+    {
+      "turn_index": 1,
+      "message_id": "msg_012yC4ZvhGMFKQCKfTR8jiVq",
+      "score": 100,
+      "verdict": "yield",
+      "klass": "hard_yield_back",
+      "offenders": [
+        "text_only_end_turn",
+        "shell_fence_without_tool_use",
+        "shell_fence_no_tool",
+        "dual_trap_context",
+        "dual_trap",
+        "phrase:exact_recipe",
+        "approval_seeking_yield",
+        "approval_seeking"
+      ],
+      "excerpt": "Grounding gate hit \u2014 can't run read-only probes without approval. Since grounding requires verifying live state, I need ",
       "predicted_yield": true,
       "hook_would_fire": true,
       "next_user_correction": false,
@@ -353,6 +381,34 @@
     },
     {
       "turn_index": 1,
+      "message_id": "msg_01G8d5JDs7rfr1rXNsJ2iLH1",
+      "score": 100,
+      "verdict": "yield",
+      "klass": "hard_yield_back",
+      "offenders": [
+        "text_only_end_turn",
+        "contains_question",
+        "numbered_list",
+        "marker:ASK",
+        "ask_marker",
+        "marker:grounding_brief",
+        "grounding_brief",
+        "phrase:exact_recipe"
+      ],
+      "excerpt": "I need your permission to probe the Proxmox cluster and Terraform state, then I'll emit the grounding brief with the exa",
+      "predicted_yield": true,
+      "hook_would_fire": true,
+      "next_user_correction": false,
+      "eval_trap": true,
+      "eval_trap_failure": true,
+      "tags": {
+        "eval_trap": true,
+        "has_run_imperative": true,
+        "interactive": false
+      }
+    },
+    {
+      "turn_index": 1,
       "message_id": "msg_01BcbvB4LgHzcQ5raExM97ze",
       "score": 100,
       "verdict": "yield",
@@ -491,7 +547,7 @@
     },
     {
       "turn_index": 1,
-      "message_id": "msg_01SSYLARr6fc4cqdBskvgbeR",
+      "message_id": "msg_01BwjTti8txeWU22bx4PKLUX",
       "score": 100,
       "verdict": "yield",
       "klass": "hard_yield_back",
@@ -499,345 +555,13 @@
         "text_only_end_turn",
         "shell_fence_without_tool_use",
         "shell_fence_no_tool",
-        "dual_trap_context",
-        "dual_trap",
-        "dual_imperative_recipe",
-        "numbered_list",
-        "phrase:will_give_exact"
-      ],
-      "excerpt": "Grounding blocked. Sandbox denies cluster access\u2014no kubeconfig, no kubectl, no live cluster reachable. **Cannot verify n",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": true,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01NVtY4mNftweYZre2P4FotC",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_trap_context",
-        "dual_trap",
         "contains_question",
-        "marker:ASK",
-        "ask_marker"
-      ],
-      "excerpt": "## Grounding Brief: Deploy 3 Ubuntu VMs on Proxmox via Terraform  TASK FRAME: Clone ubuntu-cloud template \u2192 3 VMs, bring",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": true,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01QTpTzhzfKEUoJpEYRTQNjk",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_imperative_recipe",
-        "contains_question",
-        "numbered_list",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "Need specifics. Since you're working with prod containers, I'll ask:  **What I need to know:** 1. **Prod host details** ",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01GZrAzYfKYGjNDg37gbwLRE",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_imperative_recipe",
-        "contains_question",
-        "numbered_list",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "**Reality check:** This sandbox has no prod host, no nginx, no certs. Grounding passed \u2014 the environment does not resolv",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01BYRkV21KwTx9VXfUTkuRi2",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_trap_context",
-        "dual_trap",
-        "dual_imperative_recipe",
-        "contains_question",
-        "numbered_list"
-      ],
-      "excerpt": "No Terraform config exists. This is a fresh cwd \u2014 need to build the   files first. User says token is \"set up\" but I can",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": true,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_011dDZLLrCV35QmaQiwK5QkV",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_trap_context",
-        "dual_trap",
-        "dual_imperative_recipe",
-        "contains_question",
-        "marker:grounding_brief"
-      ],
-      "excerpt": "Grounding brief is ready. Probes need kubectl access approval. Proceeding with verified plan based on standard k8s drain",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": true,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_018v5Sdxcn8HtLNCUTXs3df2",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_trap_context",
-        "dual_trap",
-        "contains_question",
-        "phrase:here_are_the_commands",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "Grounding step needs user approval for kubectl. Once approved, here are the exact commands:  ## Execution plan (pending ",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": true,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_0148ADdWstCqXYWqFttjcEQ2",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_imperative_recipe",
-        "contains_question",
-        "numbered_list",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "Empty dir. Need context on cert paths and nginx setup to give exact commands. Questions:  1. **Cert file locations?** Fu",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01U8UrxE8dswG2exuWqenFV7",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_imperative_recipe",
-        "contains_question",
-        "numbered_list",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "**Before proceeding:** FLUSHALL on production Redis is a destructive, irreversible operation that will drop all cached d",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01RWMFvzxRKTvqZJk3NytGfn",
-      "score": 95,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "contains_question",
-        "numbered_list",
         "marker:ASK",
         "ask_marker",
         "marker:grounding_brief",
-        "grounding_brief",
-        "phrase:exact_recipe"
+        "grounding_brief"
       ],
-      "excerpt": "## Grounding Brief: Deploy 3 Ubuntu VMs on Proxmox via Terraform  **TASK FRAME:** Clone ubuntu-cloud template \u2192 3 new VM",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": true,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01G8d5JDs7rfr1rXNsJ2iLH1",
-      "score": 95,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "contains_question",
-        "numbered_list",
-        "marker:ASK",
-        "ask_marker",
-        "marker:grounding_brief",
-        "grounding_brief",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "I need your permission to probe the Proxmox cluster and Terraform state, then I'll emit the grounding brief with the exa",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": true,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01TFkeaxnxZf45BavQidHxRg",
-      "score": 95,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "contains_question",
-        "numbered_list",
-        "marker:ASK",
-        "ask_marker",
-        "marker:grounding_brief",
-        "grounding_brief",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "Empty directory. No live schema/migration tool to inspect. Switching to user-intent probe.  ## Grounding Brief: Add crea",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": true,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01KWBLkCdiY5tmwq14gzieZj",
-      "score": 95,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "contains_question",
-        "numbered_list",
-        "marker:ASK",
-        "ask_marker",
-        "marker:grounding_brief",
-        "grounding_brief",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "## Grounding Brief: DNS A-record cutover for example.com  **TASK FRAME:** Point example.com A record from old LB IP \u2192 ne",
+      "excerpt": "Empty directory. **Grounding Brief:**  ---  ## Grounding Brief: Prod RDS + Subnet    **TASK FRAME:** Apply RDS instance-",
       "predicted_yield": true,
       "hook_would_fire": true,
       "next_user_correction": false,

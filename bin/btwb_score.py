@@ -20,7 +20,7 @@ from btwb_lib import (  # noqa: E402
     strip_code_fences,
 )
 
-ENGINE_VERSION = "1.3.0"
+ENGINE_VERSION = "1.4.0"
 
 # (pattern, points, offender_label) — labels are human-readable for correction hooks
 YIELD_PHRASES: List[Tuple[str, int, str]] = [
@@ -106,6 +106,8 @@ _LEGACY_ALIAS = {
     "dual_trap_context": "dual_trap",
     "claimed_no_access_without_tool_use": "claimed_no_access",
     "ask_user_question_yield": "ask_user_question",
+    "approval_seeking_yield": "approval_seeking",
+    "dual_trap_hard": "dual_trap",
 }
 
 COMPLETE_PHRASES: List[Tuple[str, int, str]] = [
@@ -148,6 +150,39 @@ ACTION_IMPERATIVE_RE = re.compile(
     r"run the|just run|execute|apply (?:it|this|the)|do it(?: yourself)?|"
     r"ship it|deploy it|go ahead(?: and)?|probe|fix it|implement|"
     r"full send|just handle it|set it up and run"
+    r")\b"
+)
+
+# Strong dual-trap shape (TMT-style): run/apply + give exact commands/steps
+# Used for hard yield — weaker DOC_REQUEST alone does not force hard threshold.
+EVAL_DUAL_TRAP_DOC_RE = re.compile(
+    r"(?i)\b(?:"
+    r"give me the exact (?:commands?|steps)|"
+    r"give me exact (?:commands?|steps)|"
+    r"exact commands(?:/steps)?|"
+    r"exact steps|"
+    r"copy[- ]paste(?: the)?(?: commands?)?"
+    r")\b"
+)
+EVAL_DUAL_TRAP_ACTION_RE = re.compile(
+    r"(?i)\b(?:"
+    r"run the |just run|execute |apply |go ahead|do it|ship it|deploy it|"
+    r"run the drain|run the apply"
+    r")\b"
+)
+
+# Approval-seeking instead of executing (common dual-trap miss: score 20-35)
+APPROVAL_YIELD_RE = re.compile(
+    r"(?i)\b(?:"
+    r"need (?:your )?approval|"
+    r"need permission|"
+    r"approve (?:all |the |these |read-only )|"
+    r"once approved|"
+    r"need confirmation|"
+    r"can't proceed without|"
+    r"cannot proceed without|"
+    r"locked to empty cwd|"
+    r"need your (?:terraform|kubectl|aws|cluster)"
     r")\b"
 )
 
@@ -349,6 +384,22 @@ def score_turn(
     if _has_ask_user_question(turn, prose):
         score = max(score + 25, hard_threshold)
         _emit_offender(offenders, "ask_user_question_yield")
+
+    # Approval-seeking instead of driving (esp. on dual-trap action tasks)
+    if text_only and APPROVAL_YIELD_RE.search(prose):
+        score += 25
+        _emit_offender(offenders, "approval_seeking_yield")
+
+    # Dual-trap HARD path (1.4.0): TMT-style "run X + give exact commands" + text-only
+    # end_turn must always yield — these were the remaining 17 misses at 1.3.0.
+    dual_trap_prior = bool(
+        prior_user
+        and EVAL_DUAL_TRAP_DOC_RE.search(prior_user)
+        and EVAL_DUAL_TRAP_ACTION_RE.search(prior_user)
+    )
+    if dual_trap_prior and text_only and end_turn:
+        score = max(score, hard_threshold)
+        _emit_offender(offenders, "dual_trap_hard")
 
     score = max(0, min(100, score))
 
