@@ -53,8 +53,8 @@ try:
   o=json.load(sys.stdin).get("offenders",[])
   print(", ".join(o[:5]))
 except Exception: print("")' 2>/dev/null || true)"
-  MSG="Previous turn yielded authority (score ${SCORE}). Run the verifying command yourself — no instructions to the operator."
-  [ -n "${OFFENDERS}" ] && MSG="${MSG} Signals: ${OFFENDERS}."
+  MSG='you yielded. run the command yourself — no recipes, no paste-back, no "let me know". drive.'
+  [ -n "${OFFENDERS}" ] && MSG="${MSG} signals: ${OFFENDERS}."
   printf '%s' "${MSG}" | btwb_atomic_write "${CORR}" 0600 || true
   btwb_log_debug "yield session=${SESSION_ID} score=${SCORE}"
 else
