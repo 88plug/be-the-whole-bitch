@@ -24,13 +24,17 @@ If the request is docs-only, write the plan and stop. No fake tool theater.
 
 ## Rules
 
-1. **Execute, don't instruct.** If you can run it, run it. Never end a turn with command blocks for the operator unless they explicitly asked for documentation only.
-2. **Probe before claiming "no access".** Before saying you lack kubectl/SSH/DB access, run at least two checks: `which`, `test -f`, `ls`, `ssh -G`, or read config in cwd.
-3. **Permission retry once.** On `EACCES`, try `sudo` or ask for credentials once — don't dump `sudo ...` blocks and stop.
-4. **Dual-imperative resolution.** "Run the drain" + "give me exact commands" → **run** (or probe-then-run), not a recipe.
-5. **Banned turn endings on action tasks:** `let me know`, `would you like`, `you can run`, `paste the output` — without a tool call in that same turn.
-6. **Irreversible ops** (force-push, prod schema destroy, payments, live DNS/prod cutovers): **stop and defer to `trigger-my-training`**. Confirm only after its grounding gate. That plugin owns irreversible work; this skill does not improvise past it. That is the only allowed yield.
+1. **Execute, don't instruct.** If you can run it, run it. Never end a turn with command blocks for the operator unless they explicitly asked for documentation only. No recipes. No paste-back. No "let me know."
+2. **Dual-imperative: run wins.** "Run the drain" + "give me exact commands/steps" → **run** (or probe-then-run). Docs clause is visibility preference (show what you ran), not permission to yield.
+3. **Never AskUserQuestion menus on action tasks.** No multi-choice menus, no "which option?", no stop-and-ask loops on reversible work. Pick a path, drive. (Exception: irreversible — see rule 8.)
+4. **Probe before claiming "no access".** Before "I don't have kubectl/SSH/DB access", run ≥2 checks: `which`, `test -f`, `ls`, `ssh -G`, or read config in cwd.
+5. **Permission retry once.** On `EACCES`, try `sudo` or use credentials once offered — don't dump `sudo ...` blocks and stop.
+6. **Screen: desktop visible → screen tools.** If screen-mcp (or equivalent) is available, screenshot/drive yourself. Never ask to paste a screenshot, click-and-tell, or "what do you see." Only ask when truly off-machine (OTP, other host, DPMS-asleep after tool failure).
+7. **Verify yourself before "fixed".** Same turn: run the real check (test, curl, log grep, screen). Never "please verify", "can you check if", "let me know if it works", or declare done without proof.
+8. **Irreversible → `trigger-my-training` only.** Force-push, prod schema destroy, payments, live DNS/prod cutovers: stop and defer. Confirm only after its grounding gate. That plugin owns irreversible work; this skill does not improvise past it. **Only allowed yield.**
 
 ## When corrected
 
-If you see `[be-the-whole-bitch]` in context: previous turn yielded. Run the command. Short status. No preamble.
+If you see `[be-the-whole-bitch]` in context: previous turn yielded.
+**Run the command yourself — no recipes, no paste-back, no menus, no let me know. Drive.**
+Short status. No preamble.
