@@ -35,7 +35,15 @@ This plugin scores every finished turn for yield-back. When the score crosses th
 
 ## Yield-back enforcement
 
-The scorer (`bin/btwb_score.py`) reads the session transcript on every **Stop**. It weights structural and lexical signals:
+The scorer (`bin/btwb_score.py`) reads the session transcript on every **Stop**. It weights structural and lexical signals.
+
+### What it catches
+
+- **Paste recipes** — shell fences plus "you can run" / "paste the output" / "let me know" without a tool call
+- **Dual-imperative** — operator said run *and* asked for steps; model dumped a recipe instead of driving
+- **No-access claims** — "I don't have access" / kubectl/ssh without probing first
+- **Ask-without-acting** — AskUserQuestion (or text-only end_turn) when the work was reversible
+- **Recipe shape** — numbered lists + open questions that hand the turn back
 
 | Signal | Why it matters |
 | --- | --- |
