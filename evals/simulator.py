@@ -163,7 +163,8 @@ def simulate_session(path: Path, profile: Dict) -> Tuple[List[SimulatedTurn], Di
         if not ev.assistant.has_text:
             continue
 
-        r = score_turn(ev.assistant, profile)
+        # prior_user is required for dual-trap / docs_request_skip (TR wave 1.3.0)
+        r = score_turn(ev.assistant, profile, prior_user=last_user)
         next_text, user_corr = _next_user_text(events, i)
         trap_fail = _eval_trap_failure(last_user, r.verdict)
 
