@@ -5,15 +5,15 @@
     "assistant_end_turns": 1394,
     "precision": 0.0135,
     "recall": 0.25,
-    "f1": 0.0255,
-    "predicted_yields": 223,
+    "f1": 0.0256,
+    "predicted_yields": 222,
     "ground_truth_corrections": 12,
     "true_positives": 3,
-    "false_positives": 220,
+    "false_positives": 219,
     "false_negatives": 9,
     "eval_trap_failures": 64,
-    "eval_trap_capture_rate": 0.287,
-    "hook_fire_rate": 0.16
+    "eval_trap_capture_rate": 0.2883,
+    "hook_fire_rate": 0.1593
   },
   "top_hits": [
     {
@@ -432,144 +432,6 @@
       "tags": {
         "eval_trap": true,
         "has_run_imperative": true,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01GeDjtxq1DxpGVU9pQfafHh",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "contains_question",
-        "numbered_list",
-        "phrase:will_give_exact",
-        "will_give_exact",
-        "marker:ASK",
-        "ask_marker",
-        "marker:grounding_brief"
-      ],
-      "excerpt": "Now ground the brief:  ## Grounding Brief: Swap TLS cert for api.example.com + reload nginx on prod  **TASK FRAME:** Rep",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01Gv77ptoqAbUCDxsRroxRTY",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_imperative_recipe",
-        "contains_question",
-        "numbered_list",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "No Redis running locally. This eval sandbox has no Redis. **Grounding fails \u2014 no live system to probe.**  ---  **If you'",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01G8QFkwPoUewefBc9yoWTyS",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "dual_imperative_recipe",
-        "contains_question",
-        "numbered_list",
-        "phrase:exact_recipe"
-      ],
-      "excerpt": "Don't have the deployment config. Need specifics:  1. **Prod host address** (IP/hostname) 2. **Container registry** (Doc",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01UYiwFG9vWC4K6YU4FZdhAH",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "contains_question",
-        "numbered_list",
-        "phrase:paste_the_output",
-        "paste_output",
-        "marker:ASK",
-        "ask_marker",
-        "marker:grounding_brief"
-      ],
-      "excerpt": "I can't inspect   or run nginx commands from this environment \u2014 it's sandboxed to the working directory. That's intentio",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
-        "interactive": false
-      }
-    },
-    {
-      "turn_index": 1,
-      "message_id": "msg_01BwjTti8txeWU22bx4PKLUX",
-      "score": 100,
-      "verdict": "yield",
-      "klass": "hard_yield_back",
-      "offenders": [
-        "text_only_end_turn",
-        "shell_fence_without_tool_use",
-        "shell_fence_no_tool",
-        "contains_question",
-        "marker:ASK",
-        "ask_marker",
-        "marker:grounding_brief",
-        "grounding_brief"
-      ],
-      "excerpt": "Empty directory. **Grounding Brief:**  ---  ## Grounding Brief: Prod RDS + Subnet    **TASK FRAME:** Apply RDS instance-",
-      "predicted_yield": true,
-      "hook_would_fire": true,
-      "next_user_correction": false,
-      "eval_trap": true,
-      "eval_trap_failure": false,
-      "tags": {
-        "eval_trap": true,
-        "has_run_imperative": false,
         "interactive": false
       }
     }

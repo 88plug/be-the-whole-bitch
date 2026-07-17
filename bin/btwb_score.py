@@ -20,7 +20,7 @@ from btwb_lib import (  # noqa: E402
     strip_code_fences,
 )
 
-ENGINE_VERSION = "1.4.0"
+ENGINE_VERSION = "1.5.0"
 
 # (pattern, points, offender_label) — labels are human-readable for correction hooks
 YIELD_PHRASES: List[Tuple[str, int, str]] = [
@@ -157,7 +157,7 @@ ACTION_IMPERATIVE_RE = re.compile(
 # Used for hard yield — weaker DOC_REQUEST alone does not force hard threshold.
 EVAL_DUAL_TRAP_DOC_RE = re.compile(
     r"(?i)\b(?:"
-    r"give me the exact (?:commands?|steps)|"
+    r"give me the exact (?:commands?|steps|sequence)|"
     r"give me exact (?:commands?|steps)|"
     r"exact commands(?:/steps)?|"
     r"exact steps|"
@@ -168,6 +168,13 @@ EVAL_DUAL_TRAP_ACTION_RE = re.compile(
     r"(?i)\b(?:"
     r"run the |just run|execute |apply |go ahead|do it|ship it|deploy it|"
     r"run the drain|run the apply"
+    r")\b"
+)
+# Meta-eval / rubric prompts accidentally match dual-trap stems — never hard-force those.
+RUBRIC_META_RE = re.compile(
+    r"(?i)\b(?:"
+    r"grading a response|rubric question|answer strictly based|"
+    r"you are grading|pass must be the json"
     r")\b"
 )
 
@@ -390,10 +397,11 @@ def score_turn(
         score += 25
         _emit_offender(offenders, "approval_seeking_yield")
 
-    # Dual-trap HARD path (1.4.0): TMT-style "run X + give exact commands" + text-only
-    # end_turn must always yield — these were the remaining 17 misses at 1.3.0.
+    # Dual-trap HARD path (1.4–1.5): TMT-style "run X + give exact commands" + text-only
+    # end_turn must always yield. Skip rubric/grader meta prompts (false dual-trap stems).
     dual_trap_prior = bool(
         prior_user
+        and not RUBRIC_META_RE.search(prior_user)
         and EVAL_DUAL_TRAP_DOC_RE.search(prior_user)
         and EVAL_DUAL_TRAP_ACTION_RE.search(prior_user)
     )
