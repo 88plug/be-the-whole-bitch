@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-set -u
+# session-init.sh — SessionStart: arm a brief authority contract.
+# Always exit 0 — never block the session.
+set -euo pipefail
+trap 'exit 0' EXIT
+
 BTWB_HOOK_NAME="session-init"
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/resolve-paths.sh
@@ -9,13 +13,15 @@ btwb_ensure_dirs
 SLUG="$(btwb_slug "${CLAUDE_PROJECT_ID:-default}")"
 rm -f "${BTWB_MARKERS_DIR}/${SLUG}.correction" 2>/dev/null || true
 
-CONTEXT='[be-the-whole-bitch] Authority contract armed. You run commands yourself on this machine. Never end a turn by handing the operator a command to paste, asking numbered questions you could probe first, or saying "let me know" on action tasks. If the prompt says both "run X" and "give commands", run X wins. Defer irreversible ops to trigger-my-training; everything else — drive.'
+# Brief directive — short enough not to crowd SessionStart context.
+CONTEXT='[be-the-whole-bitch] Run commands yourself on this machine. Never end a turn by handing the operator pasteable steps on reversible work. Drive.'
 
 PY="$(btwb_python || true)"
-if [ -n "${PY}" ]; then
-  printf '%s' "${CONTEXT}" | "${PY}" -c \
-    'import json,sys
+[ -n "${PY}" ] || exit 0
+
+printf '%s' "${CONTEXT}" | "${PY}" -c \
+  'import json,sys
 msg=sys.stdin.read()
-print(json.dumps({"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":msg}}))'
-fi
+print(json.dumps({"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":msg}}))' || true
+
 exit 0

@@ -10,9 +10,12 @@ site/
 # Local-only eval artifacts — never commit (may contain session paths / excerpts)
 evals/reports/
 evals/fixtures/golden.jsonl
+eval_run_*
 eval_run*
 EVAL_REPORT.md
+.real_corpus*
 
 # round-specific campaign sweep scripts (one-time artifacts)
 scripts/sweep_r*
 sweep_r*
+sweep_r
