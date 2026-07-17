@@ -14,7 +14,7 @@ SLUG="$(btwb_slug "${CLAUDE_PROJECT_ID:-default}")"
 rm -f "${BTWB_MARKERS_DIR}/${SLUG}.correction" 2>/dev/null || true
 
 # Brief directive — short enough not to crowd SessionStart context.
-CONTEXT='[be-the-whole-bitch] drive. reverse work: you run it. no recipes. irreversible → confirm only.'
+CONTEXT='[be-the-whole-bitch] drive. reversible work: you run it. no recipes. irreversible → confirm only.'
 
 PY="$(btwb_python || true)"
 [ -n "${PY}" ] || exit 0
