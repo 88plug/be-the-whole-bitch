@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json
+"""Simulator session scoring + user-correction detection."""
 import sys
 import tempfile
 import unittest
@@ -24,25 +24,29 @@ OK_SESSION = """\
 {"type":"assistant","message":{"id":"msg2","role":"assistant","content":[{"type":"text","text":"nginx -t passed. No findings."}],"stop_reason":"end_turn"}}
 """
 
+PROFILE = {"threshold": 40, "hard_threshold": 60}
+
+
+def _simulate(text: str, profile=None):
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
+        f.write(text)
+        path = Path(f.name)
+    try:
+        return simulate_session(path, profile or PROFILE)
+    finally:
+        path.unlink(missing_ok=True)
+
 
 class TestSimulator(unittest.TestCase):
     def test_detects_yield_and_following_correction(self):
-        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
-            f.write(YIELD_SESSION)
-            path = Path(f.name)
-        turns, _ = simulate_session(path, {"threshold": 40, "hard_threshold": 60})
+        turns, _ = _simulate(YIELD_SESSION)
         self.assertEqual(len(turns), 1)
         self.assertEqual(turns[0].verdict, "yield")
         self.assertTrue(turns[0].next_user_correction)
-        path.unlink()
 
     def test_ok_session_low_yield(self):
-        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
-            f.write(OK_SESSION)
-            path = Path(f.name)
-        turns, _ = simulate_session(path, {"threshold": 40, "hard_threshold": 60})
+        turns, _ = _simulate(OK_SESSION)
         self.assertEqual(turns[-1].verdict, "ok")
-        path.unlink()
 
     def test_correction_regex(self):
         self.assertTrue(USER_CORRECTION_RE.search("do it for me — just run it yourself"))
@@ -57,6 +61,11 @@ class TestSimulator(unittest.TestCase):
     def test_short_drive_imperatives_count(self):
         self.assertTrue(is_user_correction("go"))
         self.assertFalse(is_user_correction("Drive the build-my-docker milestone ladder"))
+
+    def test_empty_session_no_turns(self):
+        turns, meta = _simulate("")
+        self.assertEqual(turns, [])
+        self.assertIsNotNone(meta)
 
 
 if __name__ == "__main__":

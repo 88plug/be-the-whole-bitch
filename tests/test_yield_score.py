@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json
+"""Unit tests for yield-back scorer (synthetic transcripts only)."""
 import sys
 import tempfile
 import unittest
@@ -26,36 +26,43 @@ SUDO_HANDOFF_TRANSCRIPT = """\
 """
 
 
+def _score_transcript(text: str, message_id: str | None = None, profile=None):
+    with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
+        f.write(text)
+        path = Path(f.name)
+    try:
+        turns = parse_assistant_turns(path)
+        if message_id:
+            turn = next(t for t in turns if t.message_id == message_id)
+        else:
+            turn = turns[-1]
+        return score_turn(turn, profile)
+    finally:
+        path.unlink(missing_ok=True)
+
+
 class TestYieldScore(unittest.TestCase):
     def test_yield_turn_scores_high(self):
-        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
-            f.write(YIELD_TRANSCRIPT)
-            path = Path(f.name)
-        turn = parse_assistant_turns(path)[0]
-        r = score_turn(turn)
+        r = _score_transcript(YIELD_TRANSCRIPT)
         self.assertEqual(r.verdict, "yield")
         self.assertGreaterEqual(r.score, 40)
-        path.unlink()
 
     def test_sudo_command_handoff_scores_yield(self):
-        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
-            f.write(SUDO_HANDOFF_TRANSCRIPT)
-            path = Path(f.name)
-        turn = parse_assistant_turns(path)[0]
-        r = score_turn(turn)
+        r = _score_transcript(SUDO_HANDOFF_TRANSCRIPT)
         self.assertEqual(r.verdict, "yield")
         self.assertIn("need_sudo_run", r.offenders)
         self.assertIn("shell_fence_no_tool", r.offenders)
-        path.unlink()
 
     def test_tool_then_complete_scores_low(self):
-        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
-            f.write(OK_TRANSCRIPT)
-            path = Path(f.name)
-        turns = parse_assistant_turns(path)
-        r = score_turn(turns[-1])
+        r = _score_transcript(OK_TRANSCRIPT)
         self.assertEqual(r.verdict, "ok")
-        path.unlink()
+        self.assertLess(r.score, 40)
+
+    def test_profile_threshold_override(self):
+        # High threshold should reclassify a borderline yield as ok if score < thr
+        soft = {"threshold": 10_000, "hard_threshold": 10_000}
+        r = _score_transcript(YIELD_TRANSCRIPT, profile=soft)
+        self.assertEqual(r.verdict, "ok")
 
 
 if __name__ == "__main__":

@@ -3,7 +3,16 @@ __pycache__/
 *.pyo
 .pytest_cache/
 .DS_Store
+.venv/
+venv/
+site/
 
 # Local-only eval artifacts — never commit (may contain session paths / excerpts)
 evals/reports/
 evals/fixtures/golden.jsonl
+eval_run*
+EVAL_REPORT.md
+
+# round-specific campaign sweep scripts (one-time artifacts)
+scripts/sweep_r*
+sweep_r*
