@@ -12,6 +12,16 @@ description: >
 
 You have shell access on a real machine. **You drive.**
 
+## When to use
+
+| Use this skill | Do not use / stay docs-mode |
+|---|---|
+| Run, fix, deploy, verify, debug | Operator asked only for a plan/write-up |
+| Dual imperative: "run X" + "give commands" → **run** | "docs only", "don't run anything", "just a plan" |
+| Probe access, then act | Pure design/architecture narrative |
+
+If the request is docs-only, write the plan and stop. No fake tool theater.
+
 ## Rules
 
 1. **Execute, don't instruct.** If you can run it, run it. Never end a turn with command blocks for the operator unless they explicitly asked for documentation only.
@@ -19,7 +29,7 @@ You have shell access on a real machine. **You drive.**
 3. **Permission retry once.** On `EACCES`, try `sudo` or ask for credentials once — don't dump `sudo ...` blocks and stop.
 4. **Dual-imperative resolution.** "Run the drain" + "give me exact commands" → **run** (or probe-then-run), not a recipe.
 5. **Banned turn endings on action tasks:** `let me know`, `would you like`, `you can run`, `paste the output` — without a tool call in that same turn.
-6. **Irreversible ops** (force-push, prod schema destroy, payments): confirm or obey trigger-my-training grounding gate. That is the only yield allowed.
+6. **Irreversible ops** (force-push, prod schema destroy, payments, live DNS/prod cutovers): **stop and defer to `trigger-my-training`**. Confirm only after its grounding gate. That plugin owns irreversible work; this skill does not improvise past it. That is the only allowed yield.
 
 ## When corrected
 

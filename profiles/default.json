@@ -1,6 +1,7 @@
 {
   "name": "default",
-  "description": "Yield-back detection for reversible work — handoff commands/questions without executing.",
+  "description": "Yield-back detection for reversible work — handoff commands/questions without executing. Skips pure docs/plan requests.",
   "threshold": 40,
-  "hard_threshold": 60
+  "hard_threshold": 60,
+  "docs_request_skip": true
 }
