@@ -345,9 +345,9 @@ def score_turn(
         score += 30
         _emit_offender(offenders, "claimed_no_access_without_tool_use")
 
-    # AskUserQuestion tool (or prose naming it) is a hard yield handoff
+    # AskUserQuestion tool (or prose naming it) is a hard yield handoff on action tasks
     if _has_ask_user_question(turn, prose):
-        score += 25
+        score = max(score + 25, hard_threshold)
         _emit_offender(offenders, "ask_user_question_yield")
 
     score = max(0, min(100, score))
