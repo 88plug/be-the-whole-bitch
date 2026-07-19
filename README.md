@@ -19,6 +19,14 @@ Claude Code plugin for AI agent guardrails: enforce full agent authority on reve
 /plugin install be-the-whole-bitch@88plug
 ```
 
+### Grok Build
+
+```text
+grok plugin marketplace add 88plug/claude-code-plugins
+grok plugin install be-the-whole-bitch@88plug --trust
+```
+
+
 Hub-first install from the [88plug Claude Code plugins](https://github.com/88plug/claude-code-plugins) marketplace. No clone required to use it.
 
 ## Quickstart

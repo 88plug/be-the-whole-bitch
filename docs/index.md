@@ -9,6 +9,14 @@ A Claude Code plugin that stops the model from yielding authority on reversible 
 /plugin install be-the-whole-bitch@88plug
 ```
 
+### Grok Build
+
+```text
+grok plugin marketplace add 88plug/claude-code-plugins
+grok plugin install be-the-whole-bitch@88plug --trust
+```
+
+
 ## Yield-back
 
 A **yield-back** is any turn that hands the operator work the agent could have done: bash fences to paste, "you can run this", "paste the output", numbered questions it could probe first, or "let me know" on an action task.
