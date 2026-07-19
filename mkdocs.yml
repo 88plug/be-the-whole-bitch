@@ -1,5 +1,5 @@
 site_name: Be The Whole Bitch
-site_description: 'Claude Code plugin for AI agent guardrails: enforce full agent authority on reversible work — run commands yourself, never yield paste recipes back to the operator.'
+site_description: 'Agent authority guardrails for Claude Code and Grok: enforce full drive on reversible work — never yield paste recipes.'
 site_url: https://88plug.github.io/be-the-whole-bitch/
 repo_url: https://github.com/88plug/be-the-whole-bitch
 repo_name: 88plug/be-the-whole-bitch

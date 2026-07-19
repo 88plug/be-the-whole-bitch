@@ -2,7 +2,7 @@
 
 [![Docs](https://img.shields.io/badge/docs-online-blue?style=flat)](https://88plug.github.io/be-the-whole-bitch/)
 
-A Claude Code plugin that stops the model from yielding authority on reversible work. It scores finished turns for handoff language and shell recipes, then injects a one-shot drive correction on the next prompt.
+Agent authority guardrails for Claude Code and Grok: enforce full drive on reversible work — never yield paste recipes. Scores finished turns for handoff language and shell recipes, then injects a one-shot drive correction on the next prompt.
 
 ## Install
 
