@@ -1,7 +1,9 @@
 {
   "include": [
     "bin",
-    "tests"
+    "evals",
+    "tests",
+    ".ci"
   ],
   "exclude": [
     "**/__pycache__",
@@ -10,6 +12,10 @@
     "site",
     ".ruff_cache",
     ".git"
+  ],
+  "extraPaths": [
+    "bin",
+    "evals"
   ],
   "pythonVersion": "3.12",
   "typeCheckingMode": "basic"

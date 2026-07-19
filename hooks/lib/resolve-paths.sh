@@ -11,6 +11,11 @@ if [ -z "${CLAUDE_PLUGIN_ROOT:-}" ]; then
 fi
 
 btwb_resolve_data_root() {
+  # Grok sets GROK_PLUGIN_DATA (and often CLAUDE_PLUGIN_DATA aliases); prefer Grok first.
+  if [ -n "${GROK_PLUGIN_DATA:-}" ]; then
+    printf '%s\n' "${GROK_PLUGIN_DATA}"
+    return 0
+  fi
   if [ -n "${CLAUDE_PLUGIN_DATA:-}" ]; then
     printf '%s\n' "${CLAUDE_PLUGIN_DATA}"
     return 0
@@ -36,6 +41,7 @@ BTWB_MARKERS_DIR="${BTWB_DATA_ROOT}/markers"
 BTWB_LOGS_DIR="${BTWB_DATA_ROOT}/logs"
 BTWB_SCORE_PY="${CLAUDE_PLUGIN_ROOT}/bin/btwb_score.py"
 BTWB_PROFILE="${CLAUDE_PLUGIN_ROOT}/profiles/default.json"
+export BTWB_DATA_ROOT BTWB_MARKERS_DIR BTWB_LOGS_DIR BTWB_SCORE_PY BTWB_PROFILE
 
 btwb_ensure_dirs() {
   mkdir -p "${BTWB_MARKERS_DIR}" "${BTWB_LOGS_DIR}" 2>/dev/null || true

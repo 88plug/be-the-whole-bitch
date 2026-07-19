@@ -67,8 +67,10 @@ def load_json(relpath: str):
 
 
 def all_json_parse() -> None:
-    for dirpath, _dirs, files in os.walk(ROOT):
-        if "/.git" in dirpath or "__pycache__" in dirpath:
+    skip_parts = {".git", "__pycache__", "site", ".venv", "venv", "node_modules"}
+    for dirpath, dirs, files in os.walk(ROOT):
+        dirs[:] = [d for d in dirs if d not in skip_parts]
+        if any(p in Path(dirpath).parts for p in skip_parts):
             continue
         for fn in files:
             if fn.endswith(".json"):
@@ -128,17 +130,33 @@ def check_manifest(relpath: str) -> None:
     lic = data.get("license")
     if lic != "FSL-1.1-ALv2":
         fail(f"{relpath}: license must be FSL-1.1-ALv2 (found {lic!r})")
+    # Hooks: omit field when hooks/hooks.json exists (Claude auto-loads it;
+    # declaring the same file in plugin.json double-declares and blocks updates).
     hooks = data.get("hooks")
+    auto_hj = ROOT / "hooks" / "hooks.json"
     if isinstance(hooks, str):
         hp = ROOT / hooks.lstrip("./")
         if not hp.is_file():
             fail(f"{relpath}: hooks path not found: {hooks}")
+        elif auto_hj.is_file() and hp.resolve() == auto_hj.resolve():
+            fail(
+                f"{relpath}: hooks must not point at hooks/hooks.json "
+                "(Claude auto-loads it; omit the field instead)"
+            )
         else:
             check_hooks_obj(load_json(rel(hp)), relpath)
     elif isinstance(hooks, dict):
-        check_hooks_obj({"hooks": hooks}, relpath)
+        if auto_hj.is_file():
+            fail(
+                f"{relpath}: omit inline hooks when hooks/hooks.json exists "
+                "(duplicate hooks block marketplace updates)"
+            )
+        else:
+            check_hooks_obj({"hooks": hooks}, relpath)
+    elif auto_hj.is_file():
+        check_hooks_obj(load_json("hooks/hooks.json"), "hooks/hooks.json")
     else:
-        fail(f"{relpath}: missing or malformed hooks")
+        fail(f"{relpath}: missing or malformed hooks (no hooks/hooks.json either)")
     ok(f"manifest ok: {relpath}")
 
 

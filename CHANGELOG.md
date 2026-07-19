@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026.7.19
+
+- Validator accepts auto-loaded `hooks/hooks.json` (omit `hooks` in plugin.json — no double-declare)
+- Data root prefers `GROK_PLUGIN_DATA` then `CLAUDE_PLUGIN_DATA` (dual-harness)
+- Export path vars for sourced hook consumers; drop unused ruff import
+
 ## 2026.7.17
 
 - Scorer **1.3.0** (TR-backed enhancement wave)
