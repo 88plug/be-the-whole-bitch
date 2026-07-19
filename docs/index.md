@@ -1,5 +1,7 @@
 # Be The Whole Bitch
 
+[![Docs](https://img.shields.io/badge/docs-online-blue?style=flat)](https://88plug.github.io/be-the-whole-bitch/)
+
 A Claude Code plugin that stops the model from yielding authority on reversible work. It scores finished turns for handoff language and shell recipes, then injects a one-shot drive correction on the next prompt.
 
 ## Install
@@ -61,3 +63,30 @@ bash tests/smoke.sh
 ## License
 
 [FSL-1.1-ALv2](https://github.com/88plug/be-the-whole-bitch/blob/main/LICENSE) — Functional Source License, Apache-2.0 future grant.
+
+## Features
+
+| Feature | What it does |
+| --- | --- |
+| Yield-back scoring | Deterministic score on every Stop from structural + lexical signals |
+| Soft / hard thresholds | Default soft **40**, hard **60** (`profiles/default.json`) |
+| One-shot correction | Next UserPromptSubmit injects once, then deletes the marker |
+| Dual-imperative rule | "Run X" + "give commands" → run wins, not a recipe dump |
+| No-access probe rule | Claims of missing kubectl/ssh/access need real probes first |
+| Docs-request skip | Pure plan / write-up turns are not forced into tool theater |
+| Session-log eval | Simulator KPI: **eval_trap_failures** on dual-imperative traps |
+| Zero extra LLM cost | Scorer is local Python on the transcript; hooks only inject context |
+
+## Metrics
+
+Eval harness replay of real Claude Code session logs (scorer 1.4.0, 2026-07-17 intensive lap):
+
+| Metric | Value |
+| --- | --- |
+| Dual-trap capture (manual) | **98.8%** (85/86) |
+| Dual-trap misses | **1** (~17× fewer than prior lap) |
+| Predicted yields | 223 |
+| Eval trap failures | 64 |
+| Hook fire rate | 16.0% |
+
+KPI gates passed: assistant end turns ≥500, predicted yields ≥100, eval_trap_failures ≥40. Full write-up in `evals/reports/SUMMARY.md`.
